@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, router } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
+import { ListTodo, Home } from "lucide-react";
 
 export default function AppLayout({ children }) {
     const onLogout = () => {
@@ -17,6 +18,20 @@ export default function AppLayout({ children }) {
                             <Link href="/" className="text-lg font-bold">
                                 DelTodos
                             </Link>
+                            <div className="hidden md:flex items-center space-x-1">
+                                <Link href="/">
+                                    <Button variant="ghost" size="sm">
+                                        <Home className="w-4 h-4 mr-2" />
+                                        Home
+                                    </Button>
+                                </Link>
+                                <Link href="/todos">
+                                    <Button variant="ghost" size="sm">
+                                        <ListTodo className="w-4 h-4 mr-2" />
+                                        Todos
+                                    </Button>
+                                </Link>
+                            </div>
                         </div>
                         <Button variant="outline" size="sm" onClick={onLogout}>
                             Logout
