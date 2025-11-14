@@ -69,7 +69,7 @@ class TodoController extends Controller
             'is_finished' => false,
         ]);
 
-        return redirect()->route('todos.index');
+        return redirect()->route('todos.index')->with('success', 'Todo berhasil ditambahkan!');
     }
 
     public function update(Request $request, Todo $todo)
@@ -101,7 +101,7 @@ class TodoController extends Controller
 
         $todo->update($data);
 
-        return redirect()->route('todos.index');
+        return redirect()->route('todos.index')->with('success', 'Todo berhasil diperbarui!');
     }
 
     public function toggleStatus(Todo $todo)
@@ -115,7 +115,7 @@ class TodoController extends Controller
             'is_finished' => !$todo->is_finished,
         ]);
 
-        return redirect()->route('todos.index');
+        return redirect()->route('todos.index')->with('success', 'Status todo berhasil diubah!');
     }
 
     public function destroy(Todo $todo)
@@ -132,6 +132,6 @@ class TodoController extends Controller
 
         $todo->delete();
 
-        return redirect()->route('todos.index');
+        return redirect()->route('todos.index')->with('success', 'Todo berhasil dihapus!');
     }
 }

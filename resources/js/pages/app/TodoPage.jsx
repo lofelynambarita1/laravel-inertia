@@ -12,10 +12,12 @@ import {
 import {
     Plus,
     Search,
+    Filter,
     Edit,
     Trash2,
     Check,
     X,
+    Image as ImageIcon,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import Chart from "react-apexcharts";
@@ -28,10 +30,6 @@ export default function TodoPage() {
     const [editTodo, setEditTodo] = useState(null);
     const [searchTerm, setSearchTerm] = useState(filters?.search || "");
     const [statusFilter, setStatusFilter] = useState(filters?.status || "");
-
-    // Pastikan todos dan statistics ada
-    const todosData = todos?.data || [];
-    const statsData = statistics || { total: 0, completed: 0, pending: 0 };
 
     // Chart configuration
     const chartOptions = {
@@ -58,7 +56,7 @@ export default function TodoPage() {
         ],
     };
 
-    const chartSeries = [statsData.completed, statsData.pending];
+    const chartSeries = [statistics.completed, statistics.pending];
 
     // Show success/error messages
     useEffect(() => {
@@ -67,15 +65,6 @@ export default function TodoPage() {
                 icon: "success",
                 title: "Berhasil!",
                 text: flash.success,
-                timer: 3000,
-                showConfirmButton: false,
-            });
-        }
-        if (flash?.error) {
-            Swal.fire({
-                icon: "error",
-                title: "Gagal!",
-                text: flash.error,
                 timer: 3000,
                 showConfirmButton: false,
             });
@@ -127,47 +116,23 @@ export default function TodoPage() {
                             showConfirmButton: false,
                         });
                     },
-                    onError: () => {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Gagal!",
-                            text: "Terjadi kesalahan saat menghapus todo.",
-                            timer: 2000,
-                            showConfirmButton: false,
-                        });
-                    },
                 });
             }
         });
     };
 
     const handleToggleStatus = (todo) => {
-        router.post(
-            `/todos/${todo.id}/toggle`,
-            {},
-            {
-                onSuccess: () => {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Berhasil!",
-                        text: `Todo ditandai sebagai ${
-                            !todo.is_finished ? "selesai" : "belum selesai"
-                        }.`,
-                        timer: 2000,
-                        showConfirmButton: false,
-                    });
-                },
-                onError: () => {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Gagal!",
-                        text: "Terjadi kesalahan saat mengubah status.",
-                        timer: 2000,
-                        showConfirmButton: false,
-                    });
-                },
-            }
-        );
+        router.post(`/todos/${todo.id}/toggle`, {}, {
+            onSuccess: () => {
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil!",
+                    text: `Todo ditandai sebagai ${!todo.is_finished ? "selesai" : "belum selesai"}.`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            },
+        });
     };
 
     return (
@@ -207,7 +172,7 @@ export default function TodoPage() {
                                 <div className="grid grid-cols-3 gap-4 mb-4">
                                     <div className="text-center">
                                         <p className="text-2xl font-bold">
-                                            {statsData.total}
+                                            {statistics.total}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
                                             Total
@@ -215,7 +180,7 @@ export default function TodoPage() {
                                     </div>
                                     <div className="text-center">
                                         <p className="text-2xl font-bold text-green-600">
-                                            {statsData.completed}
+                                            {statistics.completed}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
                                             Selesai
@@ -223,7 +188,7 @@ export default function TodoPage() {
                                     </div>
                                     <div className="text-center">
                                         <p className="text-2xl font-bold text-amber-600">
-                                            {statsData.pending}
+                                            {statistics.pending}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
                                             Pending
@@ -238,7 +203,7 @@ export default function TodoPage() {
                                 <CardTitle>Grafik Status</CardTitle>
                             </CardHeader>
                             <CardContent className="flex justify-center">
-                                {statsData.total > 0 ? (
+                                {statistics.total > 0 ? (
                                     <Chart
                                         options={chartOptions}
                                         series={chartSeries}
@@ -328,8 +293,8 @@ export default function TodoPage() {
 
                     {/* Todo List */}
                     <div className="space-y-4">
-                        {todosData.length > 0 ? (
-                            todosData.map((todo) => (
+                        {todos.data.length > 0 ? (
+                            todos.data.map((todo) => (
                                 <Card key={todo.id}>
                                     <CardContent className="p-6">
                                         <div className="flex flex-col md:flex-row gap-4">
@@ -450,7 +415,7 @@ export default function TodoPage() {
                     </div>
 
                     {/* Pagination */}
-                    {todos?.last_page > 1 && (
+                    {todos.last_page > 1 && (
                         <div className="mt-6 flex justify-center">
                             <nav className="flex gap-2">
                                 {todos.links.map((link, index) => (
